@@ -14,6 +14,7 @@ class EquipmentInterface extends Controller
 {
     //
     public function store(Request $request){
+    	Log::info($request);
     	$rules = [
             'measure_id' => 'required',
             'test_type_id' => 'required',
@@ -24,7 +25,7 @@ class EquipmentInterface extends Controller
             return response()->json($validator,422);
 
         } else {
-        	Log::info($request);
+        	
 
         	if ($request->input('instrument') === 'sysmexXS-1000i'){
         		$test = Test::find($request->input('test_type_id'));
