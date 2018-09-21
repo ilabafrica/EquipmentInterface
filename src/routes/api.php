@@ -1,3 +1,3 @@
 <?php
 
-Route::get('receiveTestResults', 'ILabAfrica\EquipmentInterface\EquipmentInterface@store');
+Route::post('receiveTestResults', 'ILabAfrica\EquipmentInterface\EquipmentInterface@store');

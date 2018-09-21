@@ -15,6 +15,9 @@ class EquipmentInterfaceServiceProvider extends ServiceProvider
     {
         //
         include __DIR__.'/routes/api.php';
+
+        //
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
     }
 
     /**

@@ -2,8 +2,8 @@
     "name": "ilabafrica/equipmentinterface",
     "authors": [
         {
-            "name": "Benjamin",
-            "email": "benjamin.owenda@strathmore.edu"
+            "name": "@iLabAfrica",
+            "email": "ilabafrica@strathmore.edu"
         }
     ],
     "minimum-stability": "dev",
