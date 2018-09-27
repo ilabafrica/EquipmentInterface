@@ -1,0 +1,16 @@
+{
+    "name": "ilabafrica/equipmentinterface",
+    "authors": [
+        {
+            "name": "@iLabAfrica",
+            "email": "ilabafrica@strathmore.edu"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "ILabAfrica\\EquipmentInterface\\": "src/"
+        }
+    }
+}
