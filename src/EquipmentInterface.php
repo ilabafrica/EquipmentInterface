@@ -50,8 +50,7 @@ class EquipmentInterface extends Controller
                             }
                         }
 		        $test->save();
-	        }
-            else if ($request->instrument === 'genexpert'){
+	        } else if ($request->instrument === 'genexpert'){
                 $instrument = Instrument::where('name',$request->instrument)->first();
                 $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
                 $test_type_id = $instrumentmapping->test_type_id;
@@ -73,8 +72,7 @@ class EquipmentInterface extends Controller
                             }
                         }
                 $test->save();
-            }
-            else if ($request->instrument === 'sysmex_poch_100i'){
+            } else if ($request->instrument === 'sysmex_poch_100i'){
                 $instrument = Instrument::where('name',$request->instrument)->first();
                 $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
                 $test_type_id = $instrumentmapping->test_type_id;
@@ -95,12 +93,34 @@ class EquipmentInterface extends Controller
                             }
                         }
                 $test->save();
-            }
-            else if ($request->instrument === 'humacount_60ts'){
+            } else if ($request->instrument === 'humacount_60ts'){
                 Log::info($request);
                 $instrument = Instrument::where('name',$request->instrument)->first();
                 $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
                 $test_type_id = $instrumentmapping->test_type_id;
+                $test = Test::where('identifier', $request->specimen_identifier)->where('test_type_id', $test_type_id)->first();
+                        $test->test_status_id = TestStatus::completed;
+                        foreach ($test->testType->measures as $measure) {
+                            if($measure->measureType->isFreeText()||$measure->measureType->isNumeric()){
+                                foreach ($request->sub_tests as $sub_test) {
+                                    $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
+                                    $result = Result::updateOrCreate([
+                                        'measure_id'=> $instrument_parameters->measure_id,
+                                        'test_id'   => $sub_test['test_id'],
+                                        'result'    => $sub_test['value'],
+                                    ]);
+                                    $result->time_entered = date('Y-m-d H:i:s');
+                                    $result->save();
+                                }
+                            }
+                        }
+                $test->save();
+            } else if ($request->instrument === 'celltac_f_mek'){
+                $instrument = Instrument::where('name',$request->instrument)->first();
+
+                $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
+                $test_type_id = $instrumentmapping->test_type_id;
+
                 $test = Test::where('identifier', $request->specimen_identifier)->where('test_type_id', $test_type_id)->first();
                         $test->test_status_id = TestStatus::completed;
                         foreach ($test->testType->measures as $measure) {
