@@ -41,7 +41,7 @@ class EquipmentInterface extends Controller
                                     $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
                                     $result = Result::updateOrCreate([
                                         'measure_id'=> $instrument_parameters->measure_id,
-                                        'test_id'   => $sub_test['test_id'],
+                                        'test_id'   => $test->id,
                                         'result'    => $sub_test['value'],
                                     ]);
                                     $result->time_entered = date('Y-m-d H:i:s');
@@ -63,7 +63,7 @@ class EquipmentInterface extends Controller
                                     $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
                                     $result = Result::updateOrCreate([
                                         'measure_id'=> $instrument_parameters->measure_id,
-                                        'test_id'   => $sub_test['test_id'],
+                                        'test_id'   => $test->id,
                                         'result'    => $sub_test['value'],
                                     ]);
                                     $result->time_entered = date('Y-m-d H:i:s');
@@ -84,7 +84,7 @@ class EquipmentInterface extends Controller
                                     $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
                                     $result = Result::updateOrCreate([
                                         'measure_id'=> $instrument_parameters->measure_id,
-                                        'test_id'   => $sub_test['test_id'],
+                                        'test_id'   => $test->id,
                                         'result'    => $sub_test['value'],
                                     ]);
                                     $result->time_entered = date('Y-m-d H:i:s');
@@ -106,7 +106,7 @@ class EquipmentInterface extends Controller
                                     $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
                                     $result = Result::updateOrCreate([
                                         'measure_id'=> $instrument_parameters->measure_id,
-                                        'test_id'   => $sub_test['test_id'],
+                                        'test_id'   => $test->id,
                                         'result'    => $sub_test['value'],
                                     ]);
                                     $result->time_entered = date('Y-m-d H:i:s');
@@ -129,7 +129,55 @@ class EquipmentInterface extends Controller
                                     $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
                                     $result = Result::updateOrCreate([
                                         'measure_id'=> $instrument_parameters->measure_id,
-                                        'test_id'   => $sub_test['test_id'],
+                                        'test_id'   => $test->id,
+                                        'result'    => $sub_test['value'],
+                                    ]);
+                                    $result->time_entered = date('Y-m-d H:i:s');
+                                    $result->save();
+                                }
+                            }
+                        }
+                $test->save();
+            } else if ($request->instrument === 'coulter_act'){
+                Log::info($request);
+                $instrument = Instrument::where('name',$request->instrument)->first();
+
+                $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
+                $test_type_id = $instrumentmapping->test_type_id;
+
+                $test = Test::where('identifier', $request->specimen_identifier)->where('test_type_id', $test_type_id)->first();
+                        $test->test_status_id = TestStatus::completed;
+                        foreach ($test->testType->measures as $measure) {
+                            if($measure->measureType->isFreeText()||$measure->measureType->isNumeric()){
+                                foreach ($request->sub_tests as $sub_test) {
+                                    $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
+                                    $result = Result::updateOrCreate([
+                                        'measure_id'=> $instrument_parameters->measure_id,
+                                        'test_id'   => $test->id,
+                                        'result'    => $sub_test['value'],
+                                    ]);
+                                    $result->time_entered = date('Y-m-d H:i:s');
+                                    $result->save();
+                                }
+                            }
+                        }
+                $test->save();
+            } else if ($request->instrument === 'ilab_aries'){
+                Log::info($request);
+                $instrument = Instrument::where('name',$request->instrument)->first();
+
+                $instrumentmapping = InstrumentMapping::where('instrument_id',$instrument->id)->first();
+                $test_type_id = $instrumentmapping->test_type_id;
+
+                $test = Test::where('identifier', $request->specimen_identifier)->where('test_type_id', $test_type_id)->first();
+                        $test->test_status_id = TestStatus::completed;
+                        foreach ($test->testType->measures as $measure) {
+                            if($measure->measureType->isFreeText()||$measure->measureType->isNumeric()){
+                                foreach ($request->sub_tests as $sub_test) {
+                                    $instrument_parameters = InstrumentParameters::where('instrument_mapping_id', $instrumentmapping->id)->where('sub_test_id',$sub_test['test_id'])->first();
+                                    $result = Result::updateOrCreate([
+                                        'measure_id'=> $instrument_parameters->measure_id,
+                                        'test_id'   => $test->id,
                                         'result'    => $sub_test['value'],
                                     ]);
                                     $result->time_entered = date('Y-m-d H:i:s');
@@ -139,6 +187,5 @@ class EquipmentInterface extends Controller
                         }
                 $test->save();
             }
-        //}
     }
 }
