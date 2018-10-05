@@ -27,7 +27,7 @@ class CreateEquipmentInterfaceTables extends Migration
             $table->increments('id');
             $table->integer('instrument_mapping_id')->unsigned();
             $table->integer('measure_id')->unsigned();
-            $table->integer('sub_test_id')->unsigned();
+            $table->string('sub_test_id');
 
             $table->foreign('instrument_mapping_id')->references('id')->on('instrument_mappings');
             $table->foreign('measure_id')->references('id')->on('measures');
