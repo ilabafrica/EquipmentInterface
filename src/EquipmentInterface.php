@@ -220,11 +220,13 @@ class EquipmentInterface extends Controller
                 foreach ($results as $result) {
                     $identifier = substr($result, 0, strpos($result, ":"));
                     $sub_test = get_string_between($result, ':', '=');
-                    $value = str_replace('=', "", strstr($result, '='));              
+                    $value = str_replace('=', "", strstr($result, '='));
+
                     foreach ($instrumentmappings as $instrumentmapping) {
                         $test_type_id = $instrumentmapping->test_type_id;
-                        $test = Test::where('identifier', $identifier)->where('test_type_id', $test_type_id)->first();
-
+                        $test = Test::with('specimen')->whereHas('specimen', function($query) use ($identifier){
+                                    $query->where('identifier', $identifier);
+                                })->where('test_type_id', $test_type_id)->first();
                         if($test != NULL){
                             $test->test_status_id = TestStatus::completed;
                             
@@ -249,9 +251,11 @@ class EquipmentInterface extends Controller
     }
 
     public function humastar (Request $request){
-        $test = Test::with(['testType' => function($query){
-            $query->where('testType.name',$request['testtype']);
-        }])->with('encounter', 'encounter.patient', 'testType.measures', 'encounter.location', 'encounter.patient.name', 'specimen')->whereTest_status_id(TestStatus::pending)->where("specimen_id", "!=", NULL)->get();
+        $test = Test::with('encounter', 'encounter.patient', 'testType.measures', 'encounter.location', 'encounter.patient.name', 'specimen')
+            ->with('testType')->whereHas('testType', function($query) use ($request){
+                    $query->where('name', $request['testtype']);
+                }
+            )->whereTest_status_id(TestStatus::pending)->where("specimen_id", "!=", NULL)->get();
         return response()->json($test);
     }
 }
